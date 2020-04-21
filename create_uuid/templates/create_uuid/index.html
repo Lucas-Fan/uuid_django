@@ -1,0 +1,78 @@
+{% load static%}
+<html>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>UUID生成</title>
+    <head></head>
+	<style type="text/css">
+	.tdClass{
+		width: 26vw;
+		border: 1px solid #cccccc
+	}
+	</style>
+    <body>
+        <h3>UUID生成：</h3>
+		<form action="/create_uuid/abc/mulUuid/" method="get">
+			请输入要生成uuid的个数: <input type="text" id="index" name="index"> <br>
+			<button type="button" id='commit'>提交</button>
+			<button type="button" id='copyButton'>复制</button>
+		</form>
+		<p>result: 
+			<table class="li" style="width: 80vw;display: flex;margin: auto;font-size: 3.5vw;text-align: center;border-collapse:collapse;">
+				<tr>
+					<td class="tdClass" style="vnd.ms-excel.numberformat:@">UUID</td>
+				</tr>
+			</table>
+		</p>
+		<div id=NewsToolBox></div>
+	<script src="/static/jquery.min.js"></script>
+
+
+	<script>
+		var groupTable = $('.li');
+		$(document).ready(function(){
+		  $("#commit").click(function(){
+			var index = $("#index").val();
+			$('').replaceAll("tr");
+			groupTable.append('<tr><td class="tdClass" style="vnd.ms-excel.numberformat:@">UUID</td></tr>')
+			$.get("/create_uuid/abc/mulUuid/",{'index':index}, function(ret){
+				console.log(ret,'ret')
+				console.log(ret.uuidList.length,'ret.uuidList.length')
+				for(i=0;i<ret.uuidList.length;i++){
+					groupTable.append('<tr>' + '<td class="tdClass foo" style="vnd.ms-excel.numberformat:@">' + ret.uuidList[i] + '</td>' + '</tr>')
+				}
+			})
+		  });
+		});
+		document.getElementById("copyButton").addEventListener("click", function() {
+			var txt = '';
+			document.querySelectorAll('.foo').forEach(function(v) {
+				txt = txt + v.innerText + '\n'
+			});
+			copyText(txt);
+		});
+		
+        function copyText(text) {
+            var textarea = document.createElement("textarea"); //创建input对象
+            var currentFocus = document.activeElement; //当前获得焦点的元素
+            var toolBoxwrap = document.getElementById('NewsToolBox'); //将文本框插入到NewsToolBox这个之后
+            toolBoxwrap.appendChild(textarea); //添加元素
+            textarea.value = text;
+            textarea.focus();
+            if (textarea.setSelectionRange) {
+                textarea.setSelectionRange(0, textarea.value.length); //获取光标起始位置到结束位置
+            } else {
+                textarea.select();
+            }
+            try {
+                var flag = document.execCommand("copy"); //执行复制
+            } catch (eo) {
+                var flag = false;
+            }
+            toolBoxwrap.removeChild(textarea); //删除元素
+            currentFocus.focus();
+            return flag;
+        }
+	</script>
+
+	</body>
+</html>
